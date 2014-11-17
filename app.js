@@ -4,6 +4,7 @@ var expressLayouts = require('express-ejs-layouts');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({ resave: false, saveUninitialized: false, secret: 'ssbywyx' })); 
@@ -15,7 +16,6 @@ app.use(expressLayouts);
 // setup template engine
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
-
 
 // dummy data
 var users = {
@@ -33,14 +33,19 @@ function authenticate(name, pass, fn) {
 };
 
 
-
 app.get('/', function (req, res) {
     res.render('pages/index', { title: 'Express' });
 });
 
+app.get('/logout', function (req, res) {
+    req.session.destroy(function(){
+        res.redirect('/login');
+    });
+});
+
 app.get('/login', function(req, res) {
     if(req.session.user) {
-        res.redirect('/index'); // redirect to main page if login
+        res.redirect('/'); // redirect to main page if login
     } else {
         res.render('pages/login');
     }
@@ -50,6 +55,7 @@ app.post('/login', function(req, res) {
     authenticate(req.body.username, req.body.password, function(err, user) {
         if(user) {
             req.session.user = user;
+            res.redirect('/');
         } else {
             res.redirect('/login');
         }
@@ -60,8 +66,8 @@ app.post('/login', function(req, res) {
 
 var server = app.listen(3000, function () {
 
-  var host = server.address().address;
-  var port = server.address().port;
+    var host = server.address().address;
+    var port = server.address().port;
 
-  console.log('Example app listening at http://%s:%s', host, port);
+    console.log('Example app listening at http://%s:%s', host, port);
 });
