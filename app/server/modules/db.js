@@ -41,20 +41,14 @@ exports.authenticate = function(email, pass, cb) {
     });
 };
 
-//data {username: "xxx", password: "xxx", email: "xxx"}
+// data {email: "xxx", password: "xxx"}
 exports.createAccount = function (data, cb) {
-    users.findOne({username: data.username}, function(e, u){
+    users.findOne({email: data.email}, function(e, u){
         if(u) {
-            cb('username token');
+            cb('email token');
         } else {
-            users.findOne({email: data.email}, function(e, u){
-                if(u) {
-                    cb('email token');
-                } else {
-                    data.password = passwdHash(data.password);
-                    users.insert(data, {safe: true}, cb);
-                }
-            });
+            data.password = passwdHash(data.password);
+            users.insert(data, cb);
         }
     });
 };

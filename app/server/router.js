@@ -20,6 +20,20 @@ function route(app) {
         }
     });
 
+    app.get('/register', function(req, res){
+        res.render('pages/register');
+    });
+
+    app.post('/register', function(req, res){
+
+        db.createAccount({email: req.body.email, password: req.body.password}, function(err, user){
+            if(user) {
+                req.session.user = user[0];
+                res.redirect('/');
+            }
+        });
+    });
+    
     app.post('/login', function(req, res) {
         db.authenticate(req.body.username, req.body.password, function(err, user) {
             if(user) {
